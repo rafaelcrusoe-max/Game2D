@@ -4,7 +4,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
-from alien import Alien
+from alien import Alien, defaultAlien
 
 class AlienInvasion:
     """Gerencia o jogo e seus comportamentos."""
@@ -28,11 +28,31 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group() # Cria um grupo para armazenar os alienígenas presentes no jogo
     
     
+    def event_handler(self, event):
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == pygame.KEYDOWN: # Detecta quando uma tecla é pressionada
+            if event.key == pygame.K_RIGHT: # Verifica se a tecla pressionada é a seta para a direita
+                self.ship.moving_right = True
+            elif event.key == pygame.K_LEFT: # Verifica se a tecla pressionada é a seta para a esquerda
+                self.ship.moving_left = True
+            elif event.key == pygame.K_SPACE: # Verifica se a tecla pressionada é a barra de espaço
+                if(len(self.bullets) < self.settings.bullet_allowed): # Verifica se o número de projéteis na tela excede o limite permitido
+                    new_bullet = Bullet(self.screen, self.settings, self.ship) # Cria um novo projétil
+                    # Aqui seria necessário adicionar o novo projétil a um grupo de projéteis para que ele possa ser atualizado e desenhado na tela 
+                    self.bullets.add(new_bullet) # Adiciona o novo projétil ao grupo de projéteis
+        
+        elif event.type == pygame.KEYUP: # Detecta quando uma tecla é liberada
+            if event.key == pygame.K_RIGHT: # Verifica se a tecla liberada é a seta para a direita
+                self.ship.moving_right = False
+            elif event.key == pygame.K_LEFT: # Verifica se a tecla liberada é a seta para a esquerda
+                self.ship.moving_left = False
+
     def create_fleet(self):
         """Cria uma frota de alienígenas."""
         # Cria um alienígena e calcula o número de alienígenas em uma linha
         # O espaçamento entre os alienígenas é igual a um alienígena
-        alien = Alien(self.screen, self.settings)
+        alien = defaultAlien(self.screen, self.settings)
         alien_width = alien.rect.width
         alien_height = alien.rect.height
         available_space_x = self.settings.screen_width - (2 * alien_width)
@@ -61,25 +81,8 @@ class AlienInvasion:
                 
         while True:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN: # Detecta quando uma tecla é pressionada
-                    if event.key == pygame.K_RIGHT: # Verifica se a tecla pressionada é a seta para a direita
-                        self.ship.moving_right = True
-                    elif event.key == pygame.K_LEFT: # Verifica se a tecla pressionada é a seta para a esquerda
-                        self.ship.moving_left = True
-                    elif event.key == pygame.K_SPACE: # Verifica se a tecla pressionada é a barra de espaço
-                        if(len(self.bullets) < self.settings.bullet_allowed): # Verifica se o número de projéteis na tela excede o limite permitido
-                            new_bullet = Bullet(self.screen, self.settings, self.ship) # Cria um novo projétil
-                            # Aqui seria necessário adicionar o novo projétil a um grupo de projéteis para que ele possa ser atualizado e desenhado na tela 
-                            self.bullets.add(new_bullet) # Adiciona o novo projétil ao grupo de projéteis
+                self.event_handler(event)
                 
-                elif event.type == pygame.KEYUP: # Detecta quando uma tecla é liberada
-                    if event.key == pygame.K_RIGHT: # Verifica se a tecla liberada é a seta para a direita
-                        self.ship.moving_right = False
-                    elif event.key == pygame.K_LEFT: # Verifica se a tecla liberada é a seta para a esquerda
-                        self.ship.moving_left = False
-
             # Redesenha a tela a cada passagem pelo laço
             self.screen.fill(self.bg_color)
             
@@ -90,7 +93,7 @@ class AlienInvasion:
             self.aliens.draw(self.screen) # Desenha os alienígenas presentes no grupo de alienígenas na tela
             
             # Atualiza a posição da nave com base na variável de controle
-            self.ship.update() 
+            self.ship.update()
             
             for bullet in self.bullets.sprites(): # Atualiza a posição de cada projétil no grupo de projéteis
                 bullet.draw_bullet() # Desenha cada projétil na tela

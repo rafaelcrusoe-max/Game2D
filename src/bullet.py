@@ -12,6 +12,7 @@ class Bullet(Sprite):
         self.screen = alien_invasion_screen
         self.settings = alien_invasion_settings
         self.ship = alien_invasion_ship
+        self.bullets = pygame.sprite.Group() # Cria um grupo para armazenar os projéteis disparados pela nave
         self.color = self.settings.bullet_color
         # Cria um rect para o projétil em (0, 0) e depois define a posição correta
         self.rect = pygame.Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)

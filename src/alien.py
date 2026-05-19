@@ -21,8 +21,7 @@ class Alien(Sprite):
         self.x = int(self.rect.x) # Armazena a posição horizontal do alienígena como um número de ponto flutuante para permitir movimentos suaves
         
     def drawme(self)->None:
-        """Desenha o alienígena em sua posição atual."""
-        self.screen.blit(self.image, self.rect) # ('o que', 'onde')
+        pass
         
     def update(self)->None:
         self.x += (self.settings.alien_speed * self.settings.fleet_direction) # Move o alienígena para a direita ou esquerda com base na direção da frota
@@ -35,3 +34,7 @@ class Alien(Sprite):
             return True
         else:
             return False
+
+class defaultAlien(Alien):
+        def drawme(self)->None:
+            self.screen.blit(self.image, self.rect)
